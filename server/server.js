@@ -3,7 +3,6 @@ import path from 'path';
 import fs from 'fs';
 import bodyParser from 'body-parser';
 import lc from 'letter-count';
-import extract from 'extract-zip';
 import AdmZip from 'adm-zip';
 
 const app = express();
