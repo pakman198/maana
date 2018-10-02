@@ -1,0 +1,54 @@
+{
+  "name": "maana",
+  "version": "1.0.0",
+  "description": "Code challenge for Maana",
+  "main": "start_hook.js",
+  "scripts": {
+    "start": "nodemon -w dist dist/server.js",
+    "compile-server": "babel server --presets @bebel/preset-env --out-dir dist --source-maps",
+    "watch-server": "babel server --presets @bebel/preset-env --out-dir dist --source-maps --watch",
+    "start-hook": "nodemon -w server server/start_hook.js",
+    "compile": "webpack --mode development",
+    "watch": "webpack-dev-server --hot --inline --mode development",
+    "dev-all": "npm run watch & npm run watch-server &npm start",
+    "dev-all-hook": "npm run watch & npm run start-hook",
+    "lint": "eslint --ext js,jsx src server webpack.config.js"
+  },
+  "keywords": [
+    "app",
+    "book",
+    "learning"
+  ],
+  "author": "Francisco Herrera",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@babel/polyfill": "^7.0.0",
+    "async": "^2.6.1",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "react": "^16.5.2",
+    "react-dom": "^16.5.2",
+    "source-map-support": "^0.5.9",
+    "webpack": "^4.20.2",
+    "webpack-dev-middleware": "^3.4.0",
+    "webpack-hot-middleware": "^2.24.2"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.1.2",
+    "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/register": "^7.0.0",
+    "adm-zip": "^0.4.11",
+    "babel-loader": "^8.0.4",
+    "eslint": "^5.6.1",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.1",
+    "eslint-plugin-react": "^7.11.1",
+    "letter-count": "^2.8.9",
+    "nodemon": "^1.18.4",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.9"
+  }
+}
