@@ -8,6 +8,8 @@ In case of existing a zip file, extract files and process all the text files ins
 
 My solution was using nodeJS and React to have a GUI for the user
 
+For testing purposes, the dist folder is the only one with a .zip folder
+
 ## Build
 
 ```
