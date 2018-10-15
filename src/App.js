@@ -140,7 +140,10 @@ class App extends React.Component {
               </div>
               
               <form onSubmit={this.handleForm}>
-                <label>Type a folder to inspect its elements</label>
+                <label>
+                  Type a folder to inspect its elements <br />
+                  <small>You can also inspect other folders: /Users/myUser/Dcouments</small>
+                </label>
                 <br />
                 <input 
                   type="text" 
