@@ -10,9 +10,14 @@ My solution was using nodeJS and React to have a GUI for the user
 
 For testing purposes, the dist folder is the only one with a .zip folder
 
+Besides reading files from the project folder, it can also read files from any path
+on the file system a.e. `/Users/myUser/Documents`
+
 ## Build
 
 ```
 npm install
 npm run dev-all-hook
 ```
+
+Once the app is up and running, open a browser window in `http://localhost:3000`

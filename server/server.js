@@ -1,5 +1,6 @@
 import express from 'express';
 import path from 'path';
+import process from 'process';
 import fs from 'fs';
 import bodyParser from 'body-parser';
 import lc from 'letter-count';
@@ -30,59 +31,93 @@ app.get('/api', (req, res) => {
         const directories = items.filter(item => {
             if(fs.lstatSync(item).isDirectory() && item !== 'node_modules') return item;
 
-            return null
+            return;
         })
         res.status('200').json({ directories })
     });
 });
 
-app.get('/api/:path', (req, res) => {
-    const user_path = req.params.path;
+app.post('/api/path', (req, res) => {
+    const user_path = req.body.dir;
 
-    fs.readdir(__dirname + `/../${user_path}`, (err, items) => {
-        if (err) {
-            if (err.code === 'ENOENT') {
-                console.log('File not found!');
-                res.status(404).json({
-                    message: "The directory doesn't exist"
-                });
-            } else {
-                throw err;
+    validatePath(user_path)
+    .then(({absolute}) => {
+        const directory = absolute ? user_path : __dirname + `/../${user_path}`;
+
+        fs.readdir(directory, (err, items) => {
+            if (err) {
+                if (err.code === 'ENOENT') {
+                    console.log('File not found!');
+                    res.status(404).json({
+                        message: "The directory doesn't exist"
+                    });
+                } else {
+                    throw err;
+                }
+
+                return;
             }
 
-            return;
-        }
+            const textFiles = items.filter(item => {
+                if( item.match(/\.(txt|zip)$/) ) {
+                    return item;
+                } else {
+                    return null;
+                }
+            });
 
-        const textFiles = items.filter(item => {
-            if( item.match(/\.(txt|zip)$/) ) {
-                return item;
+            if(textFiles.length === 0){
+                res.status('200').json({ files: [], message: "There are no text files on this directory" });
+                return;
+                
             } else {
-                return null;
-            }
-        });
-
-        if(textFiles.length === 0){
-            res.status('200').json({ files: [], message: "There are no text files on this directory" });
-            return;
-            
-        } else {
-            const processedFiles = processFiles(user_path, textFiles);
-    
-            console.log(processedFiles)
-            res.status('200').json({ files: processedFiles, message: "" });
-        }
+                const processedFiles = processFiles(directory, textFiles);
         
+                if( processedFiles.length === 0){
+                    res.status('200').json({ files: [], message: "There are no text files on this directory" });
+                } else {
+                    res.status('200').json({ files: processedFiles, message: "" });
+                }
+            }
+            
 
+        });
+    })
+    .catch(err => {
+        console.log("Directory doesn't exist!");
+        res.status(404).json({
+            message: "The directory doesn't exist"
+        });
+    });
+});
+
+function validatePath(user_path) {
+
+    const promise = new Promise((resolve, reject) => {
+        const dir = fs.lstat(__dirname + `/../${user_path}`, (err, stat) => {
+            if (err) {
+                return fs.lstat(user_path, (err, stat) => {
+                    console.log(user_path);
+                    if(err){
+                        reject();
+                    }
+                    resolve({absolute: true});
+                });
+            }
+    
+            resolve({absolute: false});
+        });
+    
+        return dir;
     });
 
-});
+    return promise;
+}
 
 function processFiles(user_path, files) {
     
-    return files.reduce(readFile, []);
-    
     function readFile(accumulator, file) {
-        const source = path.resolve(__dirname + `/../${user_path}/${file}`);
+        const source = path.resolve(`${user_path}/${file}`);
 
         if( file.match(/\.txt$/) ) {
             const { words } = lc.countFromFile(
@@ -95,7 +130,7 @@ function processFiles(user_path, files) {
             });
     
         } else {
-            const dest = path.resolve(__dirname + `/../${user_path}`);
+            const dest = path.resolve(user_path);
     
             const zip = new AdmZip(source);
             const entries = zip.getEntries();
@@ -103,23 +138,25 @@ function processFiles(user_path, files) {
 
             // console.log({entries})
     
-            const entriesData = entries.map(entry => {
+            const entriesData = entries.reduce((acc, entry) => {
                 const { name, getData } = entry;
-                if ( !name.match(/\.txt$/) ) return;
+                if ( !name.match(/\.txt$/) ) return acc;
     
-                const source = path.resolve(__dirname + `/../${user_path}/${name}`);
+                const source = path.resolve(`${user_path}/${name}`);
                 const data = getData().toString();
                 const { words } = lc.count(data, '--words');
     
-                return {
+                return acc.concat({
                     file: name,
                     wordCount: words
-                }
-            });
+                });
+            }, []);
     
             return accumulator.concat(entriesData);
         }
     } // readFile
+
+    return files.reduce(readFile, []);
 }
 
 app.listen(3000, function(){

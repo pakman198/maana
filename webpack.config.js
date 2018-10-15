@@ -1,6 +1,7 @@
 const path = require('path');
 
 module.exports = {
+  mode: 'development',
   entry: {
     // the key will be the file name.
     // if entry is a string instead of an object, the name by default is main

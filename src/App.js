@@ -40,7 +40,13 @@ class App extends React.Component {
   }
 
   fetchDirectory(dir) {
-    fetch(`/api/${dir}`).then(response => {
+    const directory = { dir };
+    console.log({directory})
+    fetch(`/api/path`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(directory)
+    }).then(response => {
       if (response.ok && response.status === 200) {
         response.json().then(data => {
           console.log({data});
@@ -62,6 +68,8 @@ class App extends React.Component {
           this.setState({
             message: err.message
           });
+        }).catch(err => {
+          console.log({err})
         });
       }
     }).catch(err => {
@@ -85,7 +93,7 @@ class App extends React.Component {
 
   renderFS() {
     const { directories } = this.state;
-    const items = directories.map(item => <li key="item">{item}</li> );
+    const items = directories.map(item => <li key={item}>{item}</li> );
 
     return <ul>{items}</ul>;
   }
