@@ -72,11 +72,28 @@ app.post('/api/path', (req, res) => {
                 
             } else {
                 const processedFiles = processFiles(directory, textFiles);
+                const data = processedFiles.reduce((acc, file) => {
+                    const { wordsArray } = acc;
+                    
+                    acc.files.push(file.file);
+                    // seems I was mutating the value instead of assigning a new value 
+                    // like when setting state on react
+                    acc['wordsArray'] = wordsArray.concat(file.words); 
+                    
+                    return acc;
+                }, {files: [], wordsArray: []});
+
+                const wordMap = data.wordsArray.reduce((acc, word) => {
+                    acc[word] = (acc[word] || 0) + 1;
+                    return acc;
+                }, Object.create(null));
+
+                // console.log({wordMap});
         
                 if( processedFiles.length === 0){
                     res.status('200').json({ files: [], message: "There are no text files on this directory" });
                 } else {
-                    res.status('200').json({ files: processedFiles, message: "" });
+                    res.status('200').json({ files: data.files, wordMap, message: "" });
                 }
             }
             
@@ -120,13 +137,16 @@ function processFiles(user_path, files) {
         const source = path.resolve(`${user_path}/${file}`);
 
         if( file.match(/\.txt$/) ) {
-            const { words } = lc.countFromFile(
-                source, 
-                '--words');
+            const text = fs.readFileSync(source, 'utf-8');
+            const cleanText = text.toLowerCase().replace(/[\n]/g, " ").replace(/[^a-zA-Z ]/g, "");
+            // console.log({cleanText})
+            const words = cleanText.split(/[\s]+/g);
+
+            // console.log({words});
     
             return accumulator.concat({
                 file,
-                wordCount: words
+                words
             });
     
         } else {
@@ -142,13 +162,15 @@ function processFiles(user_path, files) {
                 const { name, getData } = entry;
                 if ( !name.match(/\.txt$/) ) return acc;
     
-                const source = path.resolve(`${user_path}/${name}`);
                 const data = getData().toString();
-                const { words } = lc.count(data, '--words');
+                const cleanText = data.toLowerCase().replace(/[\n]/g, " ").replace(/[^a-zA-Z ]/g, "");
+                const words = cleanText.split(/[\s]+/g);
+
+                // console.log({words});
     
                 return acc.concat({
                     file: name,
-                    wordCount: words
+                    words
                 });
             }, []);
     

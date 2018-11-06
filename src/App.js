@@ -8,6 +8,7 @@ class App extends React.Component {
       directories: [],
       directory: '',
       files: [],
+      wordMap: [],
       message: ''
     };
 
@@ -53,6 +54,7 @@ class App extends React.Component {
           if(data.files.length !== 0) {
             this.setState({
               files: data.files,
+              wordMap: data.wordMap,
               message: data.message
             });
           }else {
@@ -98,27 +100,36 @@ class App extends React.Component {
     return <ul>{items}</ul>;
   }
 
-  renderTextFiles() {
-    const { files } = this.state;
+  renderData() {
+    const { files, wordMap } = this.state;
 
     if( files.length === 0 ) return null;
 
-    const textFiles = files.map((f, index) => {
+    const map = Object.keys(wordMap).map(word => {
       return (
-        <li key={index} className="list-group-item">
-          <strong>File: </strong> {f.file}
-          <br />
-          <strong>Words: </strong> {f.wordCount}
-        </li>
-      )
+        <li key={word}>{`${word}: ${wordMap[word]}`}</li>
+      );
     });
 
-    return <ul className="list-group">{ textFiles }</ul>
+    return (
+      <ul className="list-group">
+        <li className="list-group-item">
+          <strong>Files processed: </strong>
+          <p>{ files.join(', ') }</p>
+        </li>
+        <li className="list-group-item">
+          <strong>Words histogram: </strong>
+          <ul>
+            { map }
+          </ul>
+        </li>
+      </ul>
+    );
   }
 
   render() {
     const { directory, message } = this.state;
-    const textFiles = this.renderTextFiles();
+    const data = this.renderData();
     const fs = this.renderFS();
     return (
       <div className="app">
@@ -161,7 +172,7 @@ class App extends React.Component {
                 <div className="card-body">
                   <div className="card-text">
                     { message !== '' ? (<p className="alert alert-danger">{message}</p>): null }
-                    { textFiles }
+                    { data }
                   </div>
                 </div>
               </div>
