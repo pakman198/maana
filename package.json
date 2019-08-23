@@ -49,6 +49,6 @@
     "letter-count": "^2.8.9",
     "nodemon": "^1.18.4",
     "webpack-cli": "^3.1.2",
-    "webpack-dev-server": "^3.1.9"
+    "webpack-dev-server": "^3.1.11"
   }
 }
