@@ -5,8 +5,8 @@
   "main": "start_hook.js",
   "scripts": {
     "start": "nodemon -w dist dist/server.js",
-    "compile-server": "babel server --presets @bebel/preset-env --out-dir dist --source-maps",
-    "watch-server": "babel server --presets @bebel/preset-env --out-dir dist --source-maps --watch",
+    "compile-server": "babel server --presets @babel/preset-env --out-dir dist --source-maps",
+    "watch-server": "babel server --presets @babel/preset-env --out-dir dist --source-maps --watch",
     "start-hook": "nodemon -w server server/start_hook.js",
     "compile": "webpack --mode=development",
     "watch": "webpack-dev-server --hot --inline",
@@ -29,7 +29,7 @@
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "source-map-support": "^0.5.13",
-    "webpack": "^4.40.2",
+    "webpack": "^4.41.5",
     "webpack-dev-middleware": "^3.7.1",
     "webpack-hot-middleware": "^2.25.0"
   },
